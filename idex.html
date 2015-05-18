@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>quica quiz</title>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAWMWPm7kGLVchhRRzBThCvuGlLyZqR2KM&sensor=FALSE"></script>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	    <style type="text/css">
+	      html { height: 96% }
+	      body { height: 96%; margin: 0; padding: 0 }
+	      #map_canvas { margin: 2%; height: 85%; width: 96%;}
+	    </style>
+	</head>
+	<body onload="initialize()">
+		<div id="map_canvas"></div>
+		<div class="qcountry"></div>
+		<div class="rQuestion"></div>
+		<div class="wQuestion"></div>
+		<div class="result"></div>
+		<script type="text/javascript">
+			var MY_MAPTYPE_ID = 'custom_style';
+			function initialize() {
+				var featureOpts = [
+				    {
+				      stylers: [
+				        { hue: '#228B22' },
+				        { visibility: 'simplified' },
+				        { gamma: 0.5 },
+				        { weight: 0.5 }
+				      ]
+				    },
+				    {
+				      elementType: 'labels',
+				      stylers: [
+				        { visibility: 'off' }
+				      ]
+				    },
+				    {
+				      featureType: 'water',
+				      stylers: [
+				        { color: '#00BFFF' }
+				      ]
+				    }
+			  	];
+			    var latlng = europe = new google.maps.LatLng(51, 10);
+			    var myOptions = {
+			        zoom: 4,
+			        center: europe,
+			        mapTypeControlOptions: {
+					      mapTypeIds: [google.maps.MapTypeId.ROADMAP, MY_MAPTYPE_ID]
+					    },
+					    mapTypeId: MY_MAPTYPE_ID
+				};
+			    var map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+			    var styledMapOptions = {
+				    name: 'Green Style'
+				};
+				var customMapType = new google.maps.StyledMapType(featureOpts, styledMapOptions);
+
+				map.mapTypes.set(MY_MAPTYPE_ID, customMapType);
+			    var world_geometry = new google.maps.FusionTablesLayer({
+				query: {
+				    select: 'geometry',
+				    from: '1N2LBk4JHwWpOY4d9fobIn27lfnZ5MDy-NoqqRpk',
+				    where: "Name IN ('Albania', 'Andorra', 'Armenia', 'Austria', 'Azerbaijan', 'Belarus', 'Belgium', 'Bosnia & Herzegovina', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Georgia', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Kazakhstan', 'Kosovo', 'Latvia', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Malta', 'Moldova', 'Monaco', 'Montenegro', 'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Russia', 'San Marino'...(line truncated)...
+				},
+				styles:[{
+					polygonOptions: {
+				        fillColor: '#00FF00',
+				        fillOpacity: 0.3
+			      	}
+				}],
+				map: map
+				});
+
+				//question
+				var europa = ['Albania', 'Andorra', 'Armenia', 'Austria', 'Azerbaijan', 
+							'Belarus', 'Belgium', 'Bosnia &amp; Herzegovina', 'Bulgaria', 
+							'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 
+							'Finland', 'France', 'Georgia', 'Germany', 'Greece', 'Hungary', 
+							'Iceland', 'Ireland', 'Italy', 'Kazakhstan', 'Kosovo', 'Latvia', 
+							'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Malta', 
+							'Moldova', 'Monaco', 'Montenegro', 'Netherlands', 'Norway', 'Poland', 
+							'Portugal', 'Romania', 'Russia', 'San Marino', 'Serbia', 'Slovakia', 
+							'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Turkey', 'Ukraine', 
+							'United Kingdom', 'Vatican City'];
+				var europas = europa[Math.round((Math.random() * europa.length) + 1)];
+				for (var i = 0; i < europa.length; i++) {
+					$(".qcountry").text("Wo befindet sich " + europas + "?");
+					//console.log(europa[i]);
+				};
+				//$(".googft-info-window").css("opacity", "0");
+				//click funktion
+				countright = 0;
+				countwrong = 0;
+				var result = [];
+				//europas = (europas.indexOf(result) > -1);
+				setTimeout(function() {
+					google.maps.event.addListener(world_geometry, 'click', function() {
+					    currentCountry = $(".googft-info-window").html();
+					    //$(".googft-info-window").css("opacity", "0");
+					    //$(".googft-info-window").css("width", "40px");
+					    //$(".googft-info-window").css("height", "40px");
+					    $(".googft-info-window").css("display", "none");
+					    currentCountry = currentCountry.replace("\r\n", "\n");
+					    currentCountry = currentCountry.split("\n");
+					    currentCountry = currentCountry[7];
+					    currentCountry = currentCountry.substr(13);
+					    currentCountry = currentCountry.substr(0, currentCountry.length - 4);
+					    console.log(europas, currentCountry);
+
+						//request question with country
+						if (europas === currentCountry) {
+							countright = ++countright;
+							console.log("suuupi, du hast" + " " + europas + " " + "gefunden", countright);
+							europas = europa[Math.round((Math.random() * europa.length) + 1)];
+							$(".qcountry").text("Wo befindet sich " + europas + "?");
+							$(".rQuestion").text("Richtige Antworten:" + countright);
+					    	result.push(currentCountry);
+							$(".result").html(result);
+							//europas != result[countright-1];
+							console.log(result);
+						}else{
+							countwrong = ++countwrong;
+							console.log("nein du pussy...wir suchen" + " " + europas, countwrong);
+							$(".wQuestion").text("Falsche Antworten:" + countwrong);
+						};
+						//end request
+
+					});
+				}, 1000);
+				//end set timeout function
+			}
+
+     	</script>
+	</body>
+</html>
